@@ -32,6 +32,8 @@
   
   .capturedImage {
     margin-top: 2rem;
+    width: 60%;
+    height: auto;
   }
   
   .container-buttons {
