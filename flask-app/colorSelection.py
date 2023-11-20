@@ -286,6 +286,7 @@ class ColorSelector:
 
             center = (width - 400,(i+1)*height_per_color+10)
             image_comparaciones = cv2.circle(image_comparaciones, center, 100, color_original, -1)
-
-        plt.axis('off')
-        plt.imshow(image_comparaciones)
+        #print(f'Wassup; {image_comparaciones}')
+        #plt.axis('off')
+        #plt.imshow(image_comparaciones)
+        return image_comparaciones
