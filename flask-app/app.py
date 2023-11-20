@@ -24,7 +24,7 @@ def upload_image():
     file_path1 = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
     file.save(file_path1)
     file_path2 = os.path.join(app.config['UPLOAD_FOLDER'], file2.filename)
-    file.save(file_path2)
+    file2.save(file_path2)
 
     return jsonify({'message': 'Image uploaded successfully', 'file_path': file_path1, 'file_path': file_path2})
 
