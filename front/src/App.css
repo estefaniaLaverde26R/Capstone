@@ -173,6 +173,10 @@
     align-items: center;
     justify-content: center;
   }
+
+  a {
+    text-decoration: none;
+  }
   
   .button_camara {
     background-color: #1D2D44;
