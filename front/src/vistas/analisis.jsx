@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HeaderApp } from "./../componentes/HeaderApp";
+import base from "../images/resultado_preliminar_colores.png";
+import comparison from "../images/resultado_comparacion_colores.png";
 import axios from "axios";
 
 export const Analisis = () => {
@@ -23,19 +25,11 @@ export const Analisis = () => {
     return (
       <div className="App">
         <HeaderApp />
-        <img src="../../../flask-app/resultado_preliminar_colores.png"></img>
+        <img src={base}/>
+        <img src={comparison}/>
         <div className="content">
-        <h1>Hemlo</h1>
-        {processedImage && (
-          <div>
-            <h2>Resultado de comparación de colores:</h2>
-            <img
-              src={processedImage}
-              alt="processedImage"
-              className="capturedImage"
-            />
-          </div>
-        )}
+        <h1>Resultado de comparación</h1>
+        
         </div>
       </div>
     );

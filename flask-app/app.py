@@ -37,13 +37,14 @@ def upload_image():
 
     img1 = CS.ColorSelector(file_path1)
     rgb,hsv,lab,resulting_image = img1.obtainColors()
-
+    whereto = pathlib.Path(__file__).parent.resolve().parent.resolve()
     # Imagen de los colores de la primera imagen
     plt.switch_backend('Agg') 
     plt.figure()
     plt.imshow(list(resulting_image))
     plt.axis('off')
-    plt.savefig("resultado_preliminar_colores.png")
+    plt.savefig(f"{str(whereto)}/front/src/images/resultado_preliminar_colores.png")
+    
 
     aComparar = img1.loadImage2Compare(file_path2)
     comparaciones = img1.compare_with_new_image(rgb)
@@ -54,7 +55,7 @@ def upload_image():
     plt.figure()
     plt.imshow(comp)
     plt.axis('off')
-    plt.savefig("resultado_comparacion_colores.png")
+    plt.savefig(f"{str(whereto)}/front/src/images/resultado_comparacion_colores.png")
 
     return jsonify({'message': 'Image uploaded successfully', 'file_path': file_path1, 'file_path': file_path2})
 
