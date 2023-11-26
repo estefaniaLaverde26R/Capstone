@@ -11,9 +11,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route index element={<Analisis />} />
+        <Route index element={<Index />} />
+        <Route path='/' element={<Index />} />
         <Route path='/analisis' element={<Analisis />} />
-        {/* <Route path='/analisis' element={<Analisis />} /> */}
       </Routes>
     </Router>
   );
