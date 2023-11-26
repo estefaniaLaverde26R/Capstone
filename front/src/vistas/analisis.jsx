@@ -23,7 +23,9 @@ export const Analisis = () => {
     return (
       <div className="App">
         <HeaderApp />
+        <img src="../../../flask-app/resultado_preliminar_colores.png"></img>
         <div className="content">
+        <h1>Hemlo</h1>
         {processedImage && (
           <div>
             <h2>Resultado de comparación de colores:</h2>

@@ -14,7 +14,7 @@ DOWNLOADS_FOLDER = os.path.join(os.path.expanduser("~"), "Downloads")
 app.config['UPLOAD_FOLDER'] = DOWNLOADS_FOLDER
 os.makedirs(DOWNLOADS_FOLDER, exist_ok=True)
 
-@app.route('/upload', methods=['POST','GET'])
+@app.route('/upload', methods=['POST'])
 def upload_image():
     if 'image' not in request.files and 'image2' not in request.files:
         return jsonify({'error': 'No file part'})
@@ -58,7 +58,10 @@ def upload_image():
 
     return jsonify({'message': 'Image uploaded successfully', 'file_path': file_path1, 'file_path': file_path2})
 
-
+@app.route('/analisis', methods=['GET'])
+def fetch_image():
+    print("AAAAAAAAAAAAAAAAAAAAA")
+    return "Hemlo"
 
 if __name__ == '__main__':
     app.run(debug=True)
