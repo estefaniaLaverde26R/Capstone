@@ -23,6 +23,28 @@ def rgb2lab(r,g,b):
     # Extraer los valores LAB del píxel
     return color_lab[0][0]
 
+def preprocessImage( image):
+    # Para el preprocesado de la imagen se erosionan imperfecciones y se elimina el background
+    # se elimina el fondo tomando una máscara correspondiente a los valores del tono del fondo de la caja
+
+    print('Eroding')
+    kernel = np.ones((3, 3), np.uint8)
+    preprocessed = cv2.erode(image, kernel, iterations=1)
+
+    print('Eliminating background')
+    # NOTA: ojo, si algún color de la imagen se encuentra entre los umbrales escogidos ya no aparece
+    
+    lower_background = np.array([150, 150, 150], dtype=np.uint8)
+    upper_background = np.array([210, 210, 210], dtype=np.uint8)
+
+    # crear una mascara binaria basada en los umbrales de color
+    background_mask = cv2.inRange(preprocessed, lower_background, upper_background)
+    object_mask = cv2.bitwise_not(background_mask)
+
+    # se obtiene el objeto (la tela) separada del fondo
+    return cv2.bitwise_and(preprocessed, preprocessed, mask=object_mask)
+
+
 # Create class that contains all the processes
 class ColorSelector:
     def __init__ (self,imagePath: str, colorNumber=13):
@@ -35,12 +57,11 @@ class ColorSelector:
         # load image
         self.image = cv2.cvtColor(cv2.imread(self.imagePath), cv2.COLOR_BGR2RGB)
 
-        # preprocessing
-        kernel = np.ones((3, 3), np.uint8)
-        self.preprocessed = cv2.erode(self.image, kernel, iterations=1)
-
         # imagen para comparar (inicialmente no se guarda nada)
         self.compare = None
+
+        # preprocesar la imagen
+        self.preprocessed = preprocessImage(self.image)
 
     def loadImage2Compare(self, image_path):
         self.compare = cv2.cvtColor(cv2.imread(image_path), cv2.COLOR_BGR2RGB)
@@ -84,19 +105,22 @@ class ColorSelector:
         self.labels = clf.fit_predict(modified_image)
 
         # obtain the colors as centroids
-        colors = clf.cluster_centers_.astype(int)
+        colors = clf.cluster_centers_.astype(int).tolist()
+        # eliminate background color [0,0,0]
+        if [0,0,0] in colors:
+            colors.remove([0,0,0])
         self.colors = colors
 
         # show image with all detected colors
         width = 1000
         height_per_color = 250
-        empty_image = np.zeros(((1+self.colorNumber)*height_per_color, width, 3), dtype=np.uint8)+255
+        empty_image = np.zeros(((self.colorNumber)*height_per_color, width, 3), dtype=np.uint8)+255
 
         rgb = []
         hsv = []
         lab = []
 
-        for i in range(len(colors)):
+        for i in range(len(self.colors)):
             center = (width - 150,(i+1)*height_per_color+10)
             color = (int(colors[i][0]),int(colors[i][1]),int(colors[i][2]))
             rgb.append(color)
@@ -189,11 +213,9 @@ class ColorSelector:
 
     def compare_with_new_image(self, rgb_original):
         # preprocesar
-        kernel = np.ones((3, 3), np.uint8)
-
         assert (self.compare != None).all(), 'Se debe guardar la imagen a comparar'
         aComparar = self.compare
-        preprocessed = cv2.erode(aComparar, kernel, iterations=1)
+        preprocessed = preprocessImage(aComparar)
 
         modified_image = preprocessed.reshape(preprocessed.shape[0]*preprocessed.shape[1], 3)
 
@@ -203,7 +225,12 @@ class ColorSelector:
         labels = clf.fit_predict(modified_image)
 
         # obtain the colors as centroids
-        colors = clf.cluster_centers_.astype(int)
+        # obtain the colors as centroids
+        colors = clf.cluster_centers_.astype(int).tolist()
+        # eliminate background color [0,0,0]
+        if [0,0,0] in colors:
+            colors.remove([0,0,0])
+        self.colors = colors
 
         # show image with all detected colors
         width = 1000
@@ -258,7 +285,7 @@ class ColorSelector:
             coord2 = rgb[resultados['Indice correspondiente a menor distancia']]
             resultados['Color correspondiente (RGB)'] = coord2
             resultados['Color correspondiente (LAB)'] = rgb2lab(coord2[0],coord2[1],coord2[2])
-            resultados['Color correspondiente (LAB)'] = rgb2hsv(coord2[0],coord2[1],coord2[2])
+            resultados['Color correspondiente (HSV)'] = rgb2hsv(coord2[0],coord2[1],coord2[2])
             resultados['Distancia Euclideana en RGB'] = np.min(distancias)
             comparaciones.append(resultados)
 
@@ -273,7 +300,7 @@ class ColorSelector:
         # visualizar las comparaciones
         width = 600
         height_per_color = 250
-        image_comparaciones = np.zeros(((1+self.colorNumber)*height_per_color, width, 3), dtype=np.uint8)+255
+        image_comparaciones = np.zeros(((self.colorNumber)*height_per_color, width, 3), dtype=np.uint8)+255
 
 
         for i in range(len(resultados)):
